@@ -1,2 +1,3 @@
 # ITBProjct
-Test works
+
+Do not forgot run "pod install" in folder project
