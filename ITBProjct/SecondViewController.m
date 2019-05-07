@@ -35,13 +35,20 @@
     
 }
 
+//Заменяет в строке символы для передачи в урле
+- (NSString *)stringForUrlFromString:(NSString *)urlString  encoding:(NSStringEncoding)encoding {
+    NSString *result = [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:   @"!*'();:@&=+$,/?%#[]"].invertedSet];
+    return result;
+}
+
 - (IBAction)enterPressed:(id)sender
 {
     NSString *text = self.textSearch.text;
     NSURL *url = [NSURL URLWithString:text];
     if (!(url && url.scheme && url.host)) {
         // Вероятно урл некорректный, загуглим
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.google.com/search?q=%@", [self.textSearch.text stringByReplacingOccurrencesOfString:@" " withString:@"+"]]];
+        NSString *params = [self stringForUrlFromString:[self.textSearch.text stringByReplacingOccurrencesOfString:@" " withString:@"+"] encoding:NSUTF8StringEncoding];
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.google.com/search?q=%@",params]];
     }
 
     [self showActivityProgress:0];
@@ -107,7 +114,7 @@
     BOOL completed = (progress >= 1.0);
     
     self.progress.hidden = completed;
-    UIApplication.sharedApplication.networkActivityIndicatorVisible = completed;
+    UIApplication.sharedApplication.networkActivityIndicatorVisible = !completed;
     
     if (completed) {
         [self.activity stopAnimating];
